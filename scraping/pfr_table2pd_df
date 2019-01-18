@@ -1,0 +1,32 @@
+import requests
+import pandas as pd
+
+
+def get_quarter_table(url, week_no, table_dom_location=16):
+    """A Summary of The Game By Quarters"""
+
+    resp = requests.get(url).text
+    resp_trimmed = strip_html_nwlns_cmnts(resp)
+
+    dfs = pd.read_html(resp_trimmed)
+
+    quarter_table = dfs[table_dom_location].copy(deep=True)
+
+    if quarter_table.shape == (2, 7):
+
+        quarter_table.rename(columns={'Unnamed: 0': 'HOME/AWAY', 'Unnamed: 1': 'TEAM'})
+
+        quarter_table.iloc[1, 0] = 'HOME'
+        quarter_table.iloc[0, 0] = 'AWAY'
+
+        week = pd.DataFrame([week_no, week_no], columns=['WEEK'])
+
+        return quarter_table.merge(week, left_index=True, right_index=True)
+
+    else:
+        raise "Dimensions out of Bounds"
+
+
+def strip_html_nwlns_cmnts(html_txt):
+    rslt = html_txt.replace('\n', '').replace('<!--', '').replace('-->', '')
+    return rslt
