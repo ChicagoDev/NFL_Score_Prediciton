@@ -61,17 +61,17 @@ class NFLSeason(object):
 
                 try:
 
-                    print(f'Getting 4 qtr summary')
+                    #print(f'Getting 4 qtr summary')
                     game_shrt_summary, scraped_frames = self.scrape_quarter_summary(url, week + 1)
 
-                    print(f'Getting long game summary from dfs')
+                    #print(f'Getting long game summary from dfs')
                     game_lng_report = self.get_game_summary_df_from_scrape(scraped_frames)
 
                     print(f'Merging dfs')
                     data_set_entry = self.merge_game_summaries(game_shrt_summary, game_lng_report)
 
-                    print(f'appending df to master')
-                    self.database.append(data_set_entry, ignore_index=True)
+                    #print(f'appending df to master')
+                    self.database = self.database.append(data_set_entry, ignore_index=True)
 
                     print(f'Appended table #{self.found_count}')
                     self.found_count += 1
@@ -85,7 +85,7 @@ class NFLSeason(object):
     def scrape_quarter_summary(self, url, week_no):
 
         """A Summary of The Game By Quarters"""
-        time.sleep(4)
+        time.sleep(3.5)
         resp = requests.get(url).text
         resp_trimmed = self.strip_html_nwlns_cmnts(resp)
 
@@ -126,6 +126,8 @@ class NFLSeason(object):
         intermediate_mrg = long_tbl.merge(http_ftchd_tbl, left_index=True, right_index=True)
 
         swaped_index_merge = intermediate_mrg.reindex(pd.Index([1, 0]), axis=0)
+
+        swaped_index_merge.index = pd.Index([0,1])
 
         complete_game_summary = swaped_index_merge.merge(long_tbl, left_index=True, right_index=True,
                                               suffixes=('_challenger', '_defender'))
