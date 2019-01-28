@@ -9,3 +9,5 @@ Notable Folders/Files:
 * scraping/NFLSeason.py
 * models/cross_validation
 * charts/
+
+[Blog Post](http://www.chicagoan.io/my-super-bowl-score-projection/)
